@@ -1,14 +1,35 @@
 "use strict";
 
+import { useState } from "react";
+import { useEffect } from "react";
+
 function App() {
   return (
     <>
       <Logo />
       <Search />
-      <Results />
+      <ResultsList />
+      <Result/>
     </>
   );
 }
+
+const [gifs, setGifs] = useState();
+useEffect(
+  async function fetchGifs() {
+    try{
+      const trending = await fetch(
+        "https://api.giphy.com/v1/gifs/trending?api_key=joJzQZk80ep6DF1ocKX2saSSNGU69GYg&limit=25&offset=0&rating=g&bundle=messaging_non_clips"
+      );
+      const trendingData = await trending.json();
+      setFigs(trendingData.images.url)
+    } catch {
+      if (!data) {
+        return "Service is unvailable"
+      }
+    }
+  } 
+)
 
 function Logo() {
   return (
@@ -25,24 +46,12 @@ function Search() {
     </div>
   );
 }
-function Results() {
-  return (
-    <div className="resultsContainer">
-      <div>Result 1</div>
-      <div>Result 2</div>
-      <div>Result 3</div>
-      <div>Result 4</div>
-      <div>Result 5</div>
-      <div>Result 6</div>
-      <div>Result 7</div>
-      <div>Result 8</div>
-      <div>Result 9</div>
-      <div>Result 10</div>
-      <div>Result 11</div>
-      <div>Result 12</div>
-      <div>Result 13</div>
-      <div>Result 14</div>
-    </div>
-  );
+function ResultsList() {
+  return <div className="resultsContainer">{trendingData.map(data => )}</div>;
+}
+
+function Result() {
+  return <div></div>
 }
 export default App;
+
