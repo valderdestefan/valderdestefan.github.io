@@ -5,29 +5,54 @@ import { useEffect } from "react";
 
 function App() {
   const [gifs, setGifs] = useState();
+  const [isLoading, setIslonading] = useState(true);
+  const [searchField, setSearchField] = useState("");
+  const [searching, setSearching] = useState(false);
+  console.log(searchField);
+  function handleSetSearchfield() {
+    searchField = setSearchField;
+  }
 
+  function handleOnClickSearch() {
+    setSearching(!searching);
+  }
   useEffect(() => {
     const fetchGifs = async () => {
       try {
-        const trending = await fetch(
-          "https://api.giphy.com/v1/gifs/trending?api_key=joJzQZk80ep6DF1ocKX2saSSNGU69GYg&limit=25&offset=0&rating=g&bundle=messaging_non_clips"
-        );
-        const trendingData = await trending.json();
-        console.log(trendingData.data);
-        setGifs(trendingData.data);
+        if (!searching) {
+          const trending = await fetch(
+            "https://api.giphy.com/v1/gifs/trending?api_key=joJzQZk80ep6DF1ocKX2saSSNGU69GYg&limit=25&offset=0&rating=g&bundle=messaging_non_clips"
+          );
+          const trendingData = await trending.json();
+          setGifs(trendingData.data);
+        } else if (searching) {
+          const searchedList = await fetch(
+            `https://api.giphy.com/v1/gifs/search?api_key=joJzQZk80ep6DF1ocKX2saSSNGU69GYg&q=${searchField}&limit=25&offset=0&rating=g&bundle=messaging_non_clips`
+          );
+          const searchedListData = await searchedList.json();
+          setGifs(searchedListData.data);
+        }
+
+        setIslonading(false);
       } catch (err) {
         console.log(err.message);
       }
     };
     fetchGifs();
-  }, []);
+  }, [searching]);
+
+  if (isLoading) {
+    return <p>Loading</p>;
+  }
 
   return (
     <>
       <Logo />
-      <Search />
-      <ResultsList />
-      <Result gifs={gifs} />
+      <Search
+        handleSetSearchfield={setSearchField}
+        handleOnClickSearch={handleOnClickSearch}
+      />
+      <ResultsList gifs={gifs} />
     </>
   );
 }
@@ -39,33 +64,54 @@ function Logo() {
     </div>
   );
 }
-function Search() {
+function Search({ handleSetSearchfield, handleOnClickSearch }) {
   return (
     <div className="searchContainer">
-      <input className="search" />
-      <button className="searchButton">Search</button>
+      <input
+        className="search"
+        onChange={(e) => handleSetSearchfield(e.target.value)}
+      />
+      <button className="searchButton" onClick={handleOnClickSearch}>
+        Search
+      </button>
     </div>
   );
 }
-// Тут плачется что gif никогда не был прочитан, я чуть в чатджпт спрашивал - говорит из-за неправильной работы с массивом.
+
 function ResultsList({ gifs }) {
   return (
     <>
-      {gifs?.map((gif) => (
-        <div className="resultsContainer">
-          <Result />
-        </div>
-      ))}
+      <div className="resultsContainer">
+        {gifs.map((gif) => (
+          <Result key={gif.id} gif={gif} />
+        ))}
+      </div>
     </>
   );
 }
-// Тут я пытаюсь массив достать как-то, могу достать в единичном экземпляре но чтобы все 25 штук - не выходит.
-// Между data и images есть звено где эти 25 штук есть, и я не знаю что написать чтобы они выбрались. Уже думал каунт добавлять чтобы тригеррило +1, но тогда же будет куча запросов верно?
-function Result({ gifs }) {
+
+function Result({ gif }) {
   return (
     <li>
-      <img src={gifs[0].images.original.url} />
+      <img src={gif.images.original.url} />
     </li>
   );
 }
 export default App;
+
+// useEffect(() => {
+//   const fetchGifs = async () => {
+//     try {
+//       const trending = await fetch(
+//         "https://api.giphy.com/v1/gifs/trending?api_key=joJzQZk80ep6DF1ocKX2saSSNGU69GYg&limit=25&offset=0&rating=g&bundle=messaging_non_clips"
+//       );
+//       const trendingData = await trending.json();
+
+//       setGifs(trendingData.data);
+//       setIslonading(false);
+//     } catch (err) {
+//       console.log(err.message);
+//     }
+//   };
+//   fetchGifs();
+// }, []);
