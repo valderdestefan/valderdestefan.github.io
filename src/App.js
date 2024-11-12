@@ -12,14 +12,13 @@ function App() {
 
   const [searching, setSearching] = useState(false);
   const [searchInput, setSearchInput] = useState("");
+  const [activeGif, setActiveGif] = useState(false);
+  const [openedGif, setOpenedGif] = useState(null);
+  const [favouriteGif, setFavouriteGif] = useState([]);
 
   const searchGifUrl = `https://api.giphy.com/v1/gifs/search?api_key=joJzQZk80ep6DF1ocKX2saSSNGU69GYg&q=${searchField}&limit=25&offset=0&rating=g&bundle=messaging_non_clips`;
   const trendingGifsUrl =
     "https://api.giphy.com/v1/gifs/trending?api_key=joJzQZk80ep6DF1ocKX2saSSNGU69GYg&limit=25&offset=0&rating=g&bundle=messaging_non_clips";
-
-  // const allData =
-  //   "https://api.giphy.com/v1/gifs/trending?api_key=joJzQZk80ep6DF1ocKX2saSSNGU69GYg";
-  // console.log(allData.length);
 
   async function handleOnClickSearch() {
     try {
@@ -36,7 +35,7 @@ function App() {
     setSearchInput("");
     console.log(gifs.length);
   }
-  async function handleCloseSearch() {
+  async function handleBackButton() {
     try {
       const trending = await fetch(trendingGifsUrl);
       const trendingData = await trending.json();
@@ -45,7 +44,32 @@ function App() {
       console.log(err.message);
     }
     setSearching(false);
+
+    if (activeGif) setActiveGif(false);
   }
+
+  function handleClickOnGif(gif) {
+    setOpenedGif(gif);
+    console.log(openedGif);
+    setActiveGif(true);
+  }
+
+  function handleAddFavourite(gif) {
+    setFavouriteGif((prevFavourites) => {
+      const isAlreadyFavourite = prevFavourites.some(
+        (favourite) => favourite.id === gif.id
+      );
+      if (!isAlreadyFavourite) {
+        return [...prevFavourites, gif];
+      }
+      return prevFavourites;
+    });
+    console.log(favouriteGif);
+  }
+
+  // useEffect(() => {
+  //   if (openedGif) setActiveGif(true);
+  // }, [openedGif]);
 
   async function handleInfinityScroll() {
     console.log("handle next");
@@ -91,18 +115,27 @@ function App() {
       <Logo />
       <Search
         handleOnClickSearch={handleOnClickSearch}
-        handleCloseSearch={handleCloseSearch}
+        handleBackButton={handleBackButton}
         searching={searching}
         searchInput={searchInput}
         setSearchInput={setSearchInput}
         setSearchField={setSearchField}
       />
-      <ResultsList
-        gifs={gifs}
-        searchField={searchField}
-        onScrollBottom={handleInfinityScroll}
-        // allData={allData}
-      />
+      {!activeGif ? (
+        <ResultsList
+          gifs={gifs}
+          searchField={searchField}
+          onScrollBottom={handleInfinityScroll}
+          onClickOnGif={handleClickOnGif}
+        />
+      ) : (
+        <GifCard
+          openedGif={openedGif}
+          handleBackButton={handleBackButton}
+          onClickOnLike={handleAddFavourite}
+        />
+      )}
+      <FavouriteGifs />
     </>
   );
 }
@@ -117,7 +150,7 @@ function Logo() {
 
 function Search({
   handleOnClickSearch,
-  handleCloseSearch,
+  handleBackButton,
   searching,
   searchInput,
   setSearchInput,
@@ -141,10 +174,10 @@ function Search({
       {searching ? (
         <div
           className="closeSearchContainer"
-          onClick={handleCloseSearch}
-          onKeyDown={handleCloseSearch}
+          onClick={handleBackButton}
+          onKeyDown={handleBackButton}
         >
-          <button className="closeSearch crossButton">
+          <button className="ReturnButton crossButton">
             Close search results X
           </button>
         </div>
@@ -155,7 +188,7 @@ function Search({
   );
 }
 
-function ResultsList({ gifs, searchField, onScrollBottom }) {
+function ResultsList({ gifs, searchField, onScrollBottom, onClickOnGif }) {
   return (
     <>
       {gifs.length ? (
@@ -167,7 +200,7 @@ function ResultsList({ gifs, searchField, onScrollBottom }) {
             loader={<p>Loading...</p>}
           >
             {gifs.map((gif) => (
-              <Result key={gif.id} gif={gif} />
+              <Result key={gif.id} gif={gif} onClick={onClickOnGif} />
             ))}
           </InfiniteScroll>
         </div>
@@ -178,12 +211,14 @@ function ResultsList({ gifs, searchField, onScrollBottom }) {
   );
 }
 
-function Result({ gif }) {
+function Result({ gif, onClick }) {
+  const gifImage = gif.images.original.url;
   return (
     <li>
       <img
+        onClick={() => onClick(gif)}
         className="gifContainer"
-        src={gif.images.original.url}
+        src={gifImage}
         alt={gif.title}
       />
     </li>
@@ -191,14 +226,26 @@ function Result({ gif }) {
 }
 export default App;
 
-function GifCard({ gif }) {
+function GifCard({ openedGif, handleBackButton, onClickOnLike }) {
+  const trimming = openedGif.title.indexOf("GIF");
+  const gifName = openedGif.title.substring(0, trimming);
+
   return (
-    <div>
-      <img
-        className="gifContainerStandalone"
-        src={gif.images.original.url}
-        alt={gif.title}
-      ></img>
+    <div className="gifContainerStandalone">
+      <p className="gifName">{gifName}</p>
+
+      <img src={openedGif.images.original.url} alt={openedGif.title}></img>
+      <button className="searchButton" onClick={onClickOnLike}>
+        Like
+      </button>
+
+      <button className="ReturnButton" onClick={handleBackButton}>
+        Back
+      </button>
     </div>
   );
+}
+
+function FavouriteGifs() {
+  return <div></div>;
 }
