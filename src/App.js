@@ -4,8 +4,48 @@ import { useState } from "react";
 import { useEffect } from "react";
 import React from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { useRouter, RouterPageNameDict } from "./router";
 
 function App() {
+  const { activePage, goBack, goForward, goToPage } = useRouter();
+
+  if (activePage === undefined) {
+    return <TrendingPage goToPage={goToPage} />;
+  }
+
+  if (activePage.page === RouterPageNameDict.Trending) {
+    return <TrendingPage goToPage={goToPage} />;
+  }
+
+  if (activePage.page === RouterPageNameDict.Detail) {
+    return <DetailPage goBack={goBack} />;
+  }
+  return <TrendingPage goToPage={goToPage} />;
+}
+
+function TrendingPage({ goToPage }) {
+  console.log(goToPage, "gotopage");
+
+  return (
+    <div>
+      <p>Trending page!</p>
+      <button onClick={() => goToPage(RouterPageNameDict.Detail)}>
+        go to Detail
+      </button>
+    </div>
+  );
+}
+
+function DetailPage({ goBack }) {
+  return (
+    <div>
+      <p>Detail Page</p>
+      <button onClick={goBack}>go back</button>
+    </div>
+  );
+}
+
+function Root() {
   const [gifs, setGifs] = useState();
   const [isLoading, setIslonading] = useState(true);
   const [searchField, setSearchField] = useState("");
@@ -15,10 +55,12 @@ function App() {
   const [activeGif, setActiveGif] = useState(false);
   const [openedGif, setOpenedGif] = useState(null);
   const [favouriteGif, setFavouriteGif] = useState([]);
+  const [favouriteListOpened, setFavouriteListOpened] = useState(false);
 
   const searchGifUrl = `https://api.giphy.com/v1/gifs/search?api_key=joJzQZk80ep6DF1ocKX2saSSNGU69GYg&q=${searchField}&limit=25&offset=0&rating=g&bundle=messaging_non_clips`;
   const trendingGifsUrl =
     "https://api.giphy.com/v1/gifs/trending?api_key=joJzQZk80ep6DF1ocKX2saSSNGU69GYg&limit=25&offset=0&rating=g&bundle=messaging_non_clips";
+  console.log(favouriteListOpened);
 
   async function handleOnClickSearch() {
     try {
@@ -64,12 +106,11 @@ function App() {
       }
       return prevFavourites;
     });
-    console.log(favouriteGif);
   }
 
-  // useEffect(() => {
-  //   if (openedGif) setActiveGif(true);
-  // }, [openedGif]);
+  function handleOpenFavouriteList() {
+    setFavouriteListOpened((prevState) => !prevState);
+  }
 
   async function handleInfinityScroll() {
     console.log("handle next");
@@ -120,6 +161,7 @@ function App() {
         searchInput={searchInput}
         setSearchInput={setSearchInput}
         setSearchField={setSearchField}
+        onClickOnFavouriteGifList={handleOpenFavouriteList}
       />
       {!activeGif ? (
         <ResultsList
@@ -129,13 +171,20 @@ function App() {
           onClickOnGif={handleClickOnGif}
         />
       ) : (
-        <GifCard
+        <GifDetailed
           openedGif={openedGif}
           handleBackButton={handleBackButton}
           onClickOnLike={handleAddFavourite}
         />
       )}
-      <FavouriteGifs />
+      {favouriteListOpened ? (
+        ""
+      ) : (
+        <FavouriteGifs
+          onClickOnGif={handleClickOnGif}
+          listOfVaouriteGifs={favouriteGif}
+        />
+      )}
     </>
   );
 }
@@ -155,6 +204,7 @@ function Search({
   searchInput,
   setSearchInput,
   setSearchField,
+  onClickOnFavouriteGifList,
 }) {
   return (
     <>
@@ -171,13 +221,24 @@ function Search({
           Search
         </button>
       </div>
+      <div className="closeSearchContainer">
+        <button
+          className="favouriteGifsButton"
+          onClick={() => onClickOnFavouriteGifList()}
+        >
+          Favourite Gifs
+        </button>
+      </div>
       {searching ? (
         <div
           className="closeSearchContainer"
           onClick={handleBackButton}
           onKeyDown={handleBackButton}
         >
-          <button className="ReturnButton crossButton">
+          <button
+            className="ReturnButton crossButton"
+            onClick={handleBackButton}
+          >
             Close search results X
           </button>
         </div>
@@ -191,6 +252,7 @@ function Search({
 function ResultsList({ gifs, searchField, onScrollBottom, onClickOnGif }) {
   return (
     <>
+      <p>Results</p>
       {gifs.length ? (
         <div className="resultsContainer">
           <InfiniteScroll
@@ -224,9 +286,8 @@ function Result({ gif, onClick }) {
     </li>
   );
 }
-export default App;
 
-function GifCard({ openedGif, handleBackButton, onClickOnLike }) {
+function GifDetailed({ openedGif, handleBackButton, onClickOnLike }) {
   const trimming = openedGif.title.indexOf("GIF");
   const gifName = openedGif.title.substring(0, trimming);
 
@@ -235,7 +296,7 @@ function GifCard({ openedGif, handleBackButton, onClickOnLike }) {
       <p className="gifName">{gifName}</p>
 
       <img src={openedGif.images.original.url} alt={openedGif.title}></img>
-      <button className="searchButton" onClick={onClickOnLike}>
+      <button className="searchButton" onClick={() => onClickOnLike(openedGif)}>
         Like
       </button>
 
@@ -246,6 +307,17 @@ function GifCard({ openedGif, handleBackButton, onClickOnLike }) {
   );
 }
 
-function FavouriteGifs() {
-  return <div></div>;
+function FavouriteGifs({ listOfVaouriteGifs, onClickOnGif }) {
+  return (
+    <>
+      <p>Favourite</p>
+      <div className="resultsContainer">
+        {listOfVaouriteGifs.map((gif) => (
+          <Result key={gif.id} gif={gif} onClick={onClickOnGif} />
+        ))}
+      </div>
+    </>
+  );
 }
+
+export default App;
