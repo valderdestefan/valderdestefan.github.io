@@ -1,0 +1,9 @@
+{
+  "global": {
+    "myGlobalVariable": "<reserved memory>",
+    "logInformation": {
+      "param1": "<reserved memory>",
+      "myGlobalVariable": "<reserved memory>"
+    }
+  }
+}

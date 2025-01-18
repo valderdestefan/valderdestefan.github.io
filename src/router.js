@@ -49,9 +49,8 @@ import { useState } from "react";
 // // ACTIVE
 
 export const RouterPageNameDict = {
-  Trending: "trending",
-  Search: "search",
-  Favorite: "favorite",
+  List: "list",
+  Favourite: "favourite",
   Detail: "detail", // this route is route with *. Will implement in the end
 };
 

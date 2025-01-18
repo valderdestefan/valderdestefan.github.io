@@ -23,6 +23,22 @@ body {
   align-items: center;
 }
 
+.favourite-title {
+  font-family: "Crystal Deco";
+  font-size: 40px;
+  color: white;
+
+  /* any other styling you prefer */
+}
+
+.close-x {
+  font-size: 40px;
+  color: white;
+  background-color: #009fff;
+  border-color: #009fff;
+  border-radius: 10%;
+}
+
 .searchContainer {
   display: flex;
   justify-content: center;
@@ -42,6 +58,13 @@ body {
   align-items: center;
   justify-content: center;
   margin-top: 20px;
+}
+
+.title-close-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
 .ReturnButton {
@@ -74,11 +97,12 @@ body {
   color: white;
   border: none;
   cursor: pointer;
-  opacity: 0.6;
+
   transition: 0.3s;
 }
 .searchButton:hover {
   opacity: 1;
+  transform: scale(1.2);
 }
 
 .favouriteGifsButton {
@@ -104,6 +128,7 @@ body {
 }
 .favouriteGifsButton:hover {
   opacity: 1;
+  transform: scale(1.2);
 }
 
 .resultsContainer {
@@ -113,7 +138,7 @@ body {
   align-items: center;
   margin-top: 40px;
   gap: 80px;
-
+  display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
 }
@@ -122,6 +147,9 @@ body {
   height: 200px;
   width: 250px;
   border-radius: 20px;
+}
+.gifContainer:hover {
+  cursor: pointer;
 }
 
 .gifContainerStandalone {
