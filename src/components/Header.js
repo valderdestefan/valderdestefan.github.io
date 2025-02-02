@@ -1,24 +1,29 @@
+import { useState } from "react";
 export default function Header({
   handleOnClickSearch,
-  handleBackButton,
-  searching,
-  searchInput,
-  setSearchInput,
-  setSearchField,
   onClickOnFavouriteGifList,
 }) {
+  const [searchInput, setSearchInput] = useState("");
   return (
     <>
       <div className="searchContainer">
         <input
           className="search"
           value={searchInput}
+          placeholder="Search GIFs..."
           onChange={(e) => {
             setSearchInput(e.target.value);
-            setSearchField(e.target.value);
           }}
         />
-        <button className="searchButton" onClick={() => handleOnClickSearch()}>
+        <button
+          className="button button-search"
+          onClick={() => {
+            if (searchInput !== "") {
+              handleOnClickSearch(searchInput);
+              setSearchInput("");
+            }
+          }}
+        >
           Search
         </button>
       </div>
@@ -30,22 +35,6 @@ export default function Header({
           Favourite Gifs
         </button>
       </div>
-      {searching ? (
-        <div
-          className="closeSearchContainer"
-          onClick={handleBackButton}
-          onKeyDown={handleBackButton}
-        >
-          <button
-            className="ReturnButton crossButton"
-            onClick={handleBackButton}
-          >
-            Close search results X
-          </button>
-        </div>
-      ) : (
-        <div></div>
-      )}
     </>
   );
 }

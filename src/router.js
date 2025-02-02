@@ -110,6 +110,7 @@ function goToPage(page, params) {
 //   { page: RouterPageNameDict.Detail, params: { gifId: 100 } },
 //   { page: RouterPageNameDict.Favorite, params: {} },
 //   { page: RouterPageNameDict.Detail, params: { gifId: 100 } },
+//   { page: RouterPageNameDict.List, params: { gifId: 100 } },
 // ];
 // activePageIndex = 2;
 // goBack();

@@ -1,13 +1,13 @@
 export default function Result({ gif, onClick }) {
   const gifImage = gif.images.original.url;
   return (
-    <li>
+    <div>
       <img
         onClick={() => onClick(gif)}
-        className="gifContainer"
+        className="gifContainer gifContainerImg"
         src={gifImage}
         alt={gif.title}
       />
-    </li>
+    </div>
   );
 }

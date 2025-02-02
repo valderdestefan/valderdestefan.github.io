@@ -21,22 +21,33 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 }
 
 .favourite-title {
   font-family: "Crystal Deco";
   font-size: 40px;
   color: white;
+  display: flex;
+  justify-content: center;
 
   /* any other styling you prefer */
 }
 
 .close-x {
-  font-size: 40px;
+  top: 20px;
+  right: 20px;
+  font-size: 24px;
+  background: transparent;
   color: white;
-  background-color: #009fff;
-  border-color: #009fff;
-  border-radius: 10%;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  transition: 0.3s;
+  font-weight: 1000;
+}
+.close-x:hover {
+  transform: scale(1.2);
 }
 
 .searchContainer {
@@ -48,9 +59,20 @@ body {
 
 .search {
   width: 400px;
-  height: 30px;
-  border-radius: 40px;
+  height: 40px;
+  border-radius: 20px;
   border: none;
+  padding: 0 15px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+.search:hover,
+.search:focus {
+  outline: none;
+  box-shadow: 0 0 4px #999;
+}
+.search::placeholder {
+  color: #aaa;
 }
 
 .closeSearchContainer {
@@ -60,29 +82,44 @@ body {
   margin-top: 20px;
 }
 
-.title-close-container {
+.titleCloseContainer {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
+  margin-top: 150px;
 }
 
-.ReturnButton {
-  width: 200px;
-  height: 20px;
-  border: 0;
-  background-color: #ff7f50;
-  border-radius: 40px;
+.titleCloseContainer-search {
+  margin-top: 0px;
 }
+
+.returnButton {
+  background-color: transparent;
+  border: 2px solid #555; /* dark gray or any brand color */
+  color: white;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s;
+  width: 150px;
+}
+.returnButton:hover {
+  background-color: #99cec6;
+  color: white;
+  transform: scale(1.2);
+}
+
 .crossButton {
   background-color: #ff7f50;
   border: none;
   cursor: pointer;
 }
 
-.searchButton {
+.button {
   border-radius: 20px;
-  width: 80px;
+  width: 150px;
   background: #009fff; /* fallback for old browsers */
   background: -webkit-linear-gradient(
     to right,
@@ -97,12 +134,20 @@ body {
   color: white;
   border: none;
   cursor: pointer;
+  height: 40px;
+  line-height: 40px;
+  font-size: 15px;
 
   transition: 0.3s;
 }
-.searchButton:hover {
+.button:hover {
   opacity: 1;
   transform: scale(1.2);
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+}
+
+.button-search {
+  width: 100px;
 }
 
 .favouriteGifsButton {
@@ -126,12 +171,24 @@ body {
   opacity: 0.6;
   transition: 0.3s;
 }
+.button.like {
+}
+
+.button.dislike {
+}
+
+.button-dislike {
+  /* font-size: 20px; */
+}
+.button-like {
+}
+
 .favouriteGifsButton:hover {
   opacity: 1;
   transform: scale(1.2);
 }
 
-.resultsContainer {
+.resultsContainerCopy {
   /* display: grid; */
   justify-content: center;
   padding: 40px;
@@ -143,13 +200,53 @@ body {
   grid-template-rows: 1fr 1fr;
 }
 
-.gifContainer {
-  height: 200px;
-  width: 250px;
-  border-radius: 20px;
+.resultsContainer {
+  width: 100%;
+  max-width: 1250px;
+  padding: 20px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 250px);
+  row-gap: 0;
+  /* grid-template-rows: 1fr 1fr 1fr; */
 }
+
+li {
+  margin: 0 auto;
+  list-style: none;
+}
+
+.gifContainer {
+  height: 300px;
+  width: 300px;
+}
+
+.gifContainerImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.gifContainerImg:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+} */
+
 .gifContainer:hover {
   cursor: pointer;
+}
+
+.gifDetailed {
+  display: flex;
+  justify-content: center;
 }
 
 .gifContainerStandalone {
@@ -159,8 +256,17 @@ body {
   align-items: center;
   min-width: 500px;
   min-height: 400px;
-  padding-top: 20px;
+  padding-top: 10px;
   gap: 10px;
+  position: relative;
+  margin: 20px auto;
+}
+.likeAndBack {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-top: 10px;
+  justify-content: center;
 }
 
 .container {
@@ -168,10 +274,63 @@ body {
   flex-direction: row;
 }
 
-.gifName {
+.gifNames {
+  font-family: "Bubblegum Sans", cursive; /* or your chosen fun font */
+  font-size: 26px;
   font-weight: 600;
+  color: #ffffff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+  margin-bottom: 10px; /* some spacing below the name */
 }
 
-li {
-  padding: 40px;
+.gifName {
+  width: 100%;
+  position: relative;
+  background: linear-gradient(to top, #20c9b2, #6ee8c8);
+  padding: 20px;
+  text-align: center;
+  font-family: "Crystal Deco", sans-serif; /* or any fun font */
+  font-size: 40px;
+  color: white;
+  margin: 0;
+  margin-bottom: 10px;
+}
+
+.favPageHeader {
+  width: auto;
+  position: relative;
+  background: linear-gradient(to top, #20c9b2, #6ee8c8);
+  padding: 20px;
+  text-align: center;
+  margin-top: 50px;
+}
+
+.favTitle {
+  font-family: "Crystal Deco", sans-serif; /* or any fun font */
+  font-size: 40px;
+  color: white;
+  margin: 0;
+}
+
+/* You could style the "X" button here or continue using .returnButton */
+.closeButton {
+  position: absolute; /* placed relative to .favPageHeader */
+  top: 20px;
+  right: 20px;
+  font-size: 24px;
+  background: transparent;
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  transition: 0.3s;
+  font-weight: 1000;
+}
+.closeButton:hover {
+  transform: scale(1.2);
+}
+
+.favouriteGifsPage {
+  margin-top: 50px; /* extra space from the top of the page */
+  padding: 20px; /* optional internal padding */
 }

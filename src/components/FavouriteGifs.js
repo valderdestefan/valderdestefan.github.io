@@ -4,12 +4,15 @@ export default function FavouriteGifs({
   listOfVaouriteGifs,
   onClickOnGif,
   hasFavorites,
+  goBack,
 }) {
   return (
     <>
-      <div className="title-close-container">
-        <p className="favourite-title">Favourite Gifs</p>
-        <button>X</button>
+      <div className="favPageHeader">
+        <p className="favTitle">Favourite Gifs</p>
+        <button onClick={goBack} className="closeButton">
+          X
+        </button>
       </div>
 
       {hasFavorites ? (
@@ -19,8 +22,19 @@ export default function FavouriteGifs({
           ))}
         </div>
       ) : (
-        <p>Oops... maybe you want to add something here?</p>
+        <div className="title-close-container">
+          <p className="favourite-title">The list is empty</p>
+        </div>
       )}
     </>
   );
+}
+
+{
+  /* <div className="title-close-container">
+  <p className="favourite-title">Favourite Gifs</p>
+  <button onClick={goBack} className="returnButton">
+    X
+  </button>
+</div>; */
 }

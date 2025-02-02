@@ -7,32 +7,37 @@ export default function ResultsList({
   onScrollBottom,
   onClickOnGif,
   searching,
+  handleBackButton,
 }) {
   return (
     <>
-      {searching ? (
-        <div className="title-close-container">
-          <p className="favourite-title">Results</p>
-          <button className="close-x">X</button>
+      {searching && gifs.length ? (
+        <div className="titleCloseContainer titleCloseContainer-search">
+          <p className="favourite-title">Results for "{searchField}"</p>
+          <button className="close-x" onClick={handleBackButton}>
+            X
+          </button>
         </div>
-      ) : (
-        <></>
-      )}
+      ) : null}
       {gifs.length ? (
-        <div className="resultsContainer">
-          <InfiniteScroll
-            dataLength={gifs.length}
-            next={() => onScrollBottom()}
-            hasMore={true}
-            loader={<p>Loading...</p>}
-          >
-            {gifs.map((gif) => (
-              <Result key={gif.id} gif={gif} onClick={onClickOnGif} />
-            ))}
-          </InfiniteScroll>
-        </div>
+        <InfiniteScroll
+          dataLength={gifs.length}
+          className="resultsContainer"
+          next={() => onScrollBottom()}
+          hasMore={true}
+          loader={<p>Loading...</p>}
+        >
+          {gifs.map((gif) => (
+            <Result key={gif.id} gif={gif} onClick={onClickOnGif} />
+          ))}
+        </InfiniteScroll>
       ) : (
-        <p>No results for {searchField}</p>
+        <div className="titleCloseContainer">
+          <p className="favourite-title">No results for "{searchField}"</p>
+          <button className="close-x" onClick={handleBackButton}>
+            X
+          </button>
+        </div>
       )}
     </>
   );

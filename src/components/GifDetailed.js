@@ -11,29 +11,32 @@ export default function GifDetailed({
   //   console.log("gifCheck", handleGifCheck(openedGif.id));
 
   return (
-    <div className="gifContainerStandalone">
-      <p className="gifName">{gifName}</p>
+    <>
+      <div className="gifContainerStandalone">
+        <p className="gifName">{gifName}</p>
 
-      <img src={openedGif.images.original.url} alt={openedGif.title}></img>
-      {!isFavorite ? (
-        <button
-          className="searchButton"
-          onClick={() => onClickOnLike(openedGif)}
-        >
-          Like
+        <img src={openedGif.images.original.url} alt={openedGif.title}></img>
+      </div>
+      <div className="likeAndBack">
+        {!isFavorite ? (
+          <button
+            className="button button-like"
+            onClick={() => onClickOnLike(openedGif)}
+          >
+            Like ❤️
+          </button>
+        ) : (
+          <button
+            className="button button-dislike"
+            onClick={() => onClickOnDislike(openedGif.id)}
+          >
+            Dislike 👎
+          </button>
+        )}
+        <button className="returnButton" onClick={handleBackButton}>
+          Back
         </button>
-      ) : (
-        <button
-          className="searchButton"
-          onClick={() => onClickOnDislike(openedGif.id)}
-        >
-          Dislike
-        </button>
-      )}
-
-      <button className="ReturnButton" onClick={handleBackButton}>
-        Back
-      </button>
-    </div>
+      </div>
+    </>
   );
 }

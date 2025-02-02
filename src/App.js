@@ -52,10 +52,27 @@ function App() {
 
   console.log(getFavoriteList());
 
+  // activePage {
+  //  page: string;
+  //  params: { [key: string]: any }
+  // }
+
+  // example list; activePage {
+  //  page: 'list';
+  //  params: {}
+  // }
+
+  // example Detail; activePage {
+  //  page: 'detail';
+  //  params: { gif: {id: 'dfdf', name: 'name', image: '',} }
+  // }
+
   const { activePage, goBack, goForward, goToPage } = useRouter();
 
-  let page = <ListPage goToPage={goToPage} />;
+  let page = null;
+  console.log("active page", activePage);
 
+  // initial value:  just after you reload the browser page;
   if (activePage === undefined) {
     page = <ListPage goToPage={goToPage} />;
   }
@@ -63,10 +80,11 @@ function App() {
   if (activePage?.page === RouterPageNameDict.List) {
     page = <ListPage goToPage={goToPage} />;
   }
-  // TO EXPLAIN ONE MORE TIME BY LEXA   !!!!!
+
   if (activePage?.page === RouterPageNameDict.Favourite) {
     page = (
       <FavouriteListPage
+        goBack={goBack}
         goToPage={goToPage}
         favouriteGifs={list}
         hasFavorites={list.length}
@@ -88,15 +106,24 @@ function App() {
 
   return (
     <>
-      <Logo />
+      <Logo onClick={() => goToPage(RouterPageNameDict.List)} />
       {page}
     </>
   );
 }
 
-function FavouriteListPage({ goToPage, favouriteGifs, hasFavorites }) {
+// utils
+const getGifsBySearch = async function (searchInput) {
+  const url = `https://api.giphy.com/v1/gifs/search?api_key=joJzQZk80ep6DF1ocKX2saSSNGU69GYg&q=${searchInput}&limit=25&offset=0&rating=g&bundle=messaging_non_clips`;
+  const searchedList = await fetch(url);
+  const searchedListData = await searchedList.json();
+  return searchedListData;
+};
+
+function FavouriteListPage({ goToPage, favouriteGifs, hasFavorites, goBack }) {
   return (
     <FavouriteGifs
+      goBack={goBack}
       onClickOnGif={(gif) => goToPage(RouterPageNameDict.Detail, { gif })}
       listOfVaouriteGifs={favouriteGifs}
       hasFavorites={hasFavorites}
@@ -109,11 +136,9 @@ function ListPage({ goToPage }) {
   const [searchField, setSearchField] = useState("");
   const [searching, setSearching] = useState(false);
   const [isLoading, setIslonading] = useState(true);
-  const [searchInput, setSearchInput] = useState("");
 
   const trendingGifsUrl =
     "https://api.giphy.com/v1/gifs/trending?api_key=joJzQZk80ep6DF1ocKX2saSSNGU69GYg&limit=25&offset=0&rating=g&bundle=messaging_non_clips";
-  const searchGifUrl = `https://api.giphy.com/v1/gifs/search?api_key=joJzQZk80ep6DF1ocKX2saSSNGU69GYg&q=${searchField}&limit=25&offset=0&rating=g&bundle=messaging_non_clips`;
 
   useEffect(() => {
     const fetchGifs = async () => {
@@ -145,9 +170,9 @@ function ListPage({ goToPage }) {
 
     const nextDataSearch = await responseSearch.json();
 
-    !searching
-      ? setGifs([...gifs, ...nextData.data])
-      : setGifs([...gifs, ...nextDataSearch.data]);
+    searching
+      ? setGifs([...gifs, ...nextDataSearch.data])
+      : setGifs([...gifs, ...nextData.data]);
   }
 
   async function handleCloseSearch() {
@@ -159,21 +184,22 @@ function ListPage({ goToPage }) {
       console.log(err.message);
     }
     setSearching(false);
+    console.log("did somehting has happened?");
   }
 
-  async function handleOnClickSearch() {
+  async function handleOnClickSearch(searchInput) {
     try {
-      const searchedList = await fetch(searchGifUrl);
-      const searchedListData = await searchedList.json();
+      setSearchField(searchInput);
+      const searchedListData = await getGifsBySearch(searchInput);
       console.log("searchField", searchedListData);
       console.log("searchFieldData", searchedListData.data);
+
       setGifs(searchedListData.data);
     } catch (err) {
       console.log(err.message);
     }
 
     setSearching(true);
-    setSearchInput("");
     console.log(gifs.length);
   }
 
@@ -185,16 +211,13 @@ function ListPage({ goToPage }) {
     <div>
       <Header
         handleOnClickSearch={handleOnClickSearch}
-        // TODO FIX BACK BUTTON
-        handleBackButton={handleCloseSearch}
         searching={searching}
-        searchInput={searchInput}
-        setSearchInput={setSearchInput}
-        setSearchField={setSearchField}
+        // setSearchField={setSearchField}
         // TODO MOVE FAVOURITE GIFS BUTTON
         onClickOnFavouriteGifList={() => goToPage(RouterPageNameDict.Favourite)}
       />
       <ResultsList
+        handleBackButton={handleCloseSearch}
         gifs={gifs}
         searchField={searchField}
         searching={searching}
@@ -230,122 +253,5 @@ function DetailPage({
     </div>
   );
 }
-
-// function Root() {
-//   const [gifs, setGifs] = useState();
-//   const [isLoading, setIslonading] = useState(true);
-//   const [searchField, setSearchField] = useState("");
-
-//   const [searching, setSearching] = useState(false);
-//   // const [searchInput, setSearchInput] = useState("");
-//   const [activeGif, setActiveGif] = useState(false);
-//   // const [openedGif, setOpenedGif] = useState(null);
-// const [favouriteGif, setFavouriteGif] = useState([]);
-// const [favouriteListOpened, setFavouriteListOpened] = useState(false);
-
-// const searchGifUrl = `https://api.giphy.com/v1/gifs/search?api_key=joJzQZk80ep6DF1ocKX2saSSNGU69GYg&q=${searchField}&limit=25&offset=0&rating=g&bundle=messaging_non_clips`;
-// const trendingGifsUrl =
-//   "https://api.giphy.com/v1/gifs/trending?api_key=joJzQZk80ep6DF1ocKX2saSSNGU69GYg&limit=25&offset=0&rating=g&bundle=messaging_non_clips";
-// console.log(favouriteListOpened);
-
-// async function handleBackButton() {
-//   try {
-//     const trending = await fetch(trendingGifsUrl);
-//     const trendingData = await trending.json();
-//     setGifs(trendingData.data);
-//   } catch (err) {
-//     console.log(err.message);
-//   }
-//   setSearching(false);
-
-//   if (activeGif) setActiveGif(false);
-// }
-
-// function handleClickOnGif(gif) {
-//   setOpenedGif(gif);
-//   console.log(openedGif);
-//   setActiveGif(true);
-// }
-
-// function handleOpenFavouriteList() {
-//   setFavouriteListOpened((prevState) => !prevState);
-// }
-
-// async function handleInfinityScroll() {
-//   console.log("handle next");
-//   const offset = gifs.length;
-//   console.log(offset);
-
-//   const response = await fetch(
-//     `https://api.giphy.com/v1/gifs/trending?api_key=joJzQZk80ep6DF1ocKX2saSSNGU69GYg&limit=25&offset=${offset}&rating=g&bundle=messaging_non_clips`
-//   );
-//   const nextData = await response.json();
-
-//   const responseSearch = await fetch(
-//     `https://api.giphy.com/v1/gifs/search?api_key=joJzQZk80ep6DF1ocKX2saSSNGU69GYg&q=${searchField}&limit=25&offset=${offset}&rating=g&bundle=messaging_non_clips`
-//   );
-
-//   const nextDataSearch = await responseSearch.json();
-
-//   !searching
-//     ? setGifs([...gifs, ...nextData.data])
-//     : setGifs([...gifs, ...nextDataSearch.data]);
-// }
-
-// useEffect(() => {
-//   const fetchGifs = async () => {
-//     try {
-//       const trending = await fetch(trendingGifsUrl);
-//       const trendingData = await trending.json();
-//       setGifs(trendingData.data);
-//       setIslonading(false);
-//     } catch (err) {
-//       console.log(err.message);
-//     }
-//   };
-//   fetchGifs();
-// }, []);
-
-// if (isLoading) {
-//   return <p>Loading</p>;
-// }
-
-// return (
-//   <>
-//     <Logo />
-//     <Header
-//       handleOnClickSearch={handleOnClickSearch}
-//       handleBackButton={handleBackButton}
-//       searching={searching}
-//       searchInput={searchInput}
-//       setSearchInput={setSearchInput}
-//       setSearchField={setSearchField}
-//       onClickOnFavouriteGifList={handleOpenFavouriteList}
-//     />
-//     {!activeGif ? (
-//       <ResultsList
-//         gifs={gifs}
-//         searchField={searchField}
-//         onScrollBottom={handleInfinityScroll}
-//         onClickOnGif={handleClickOnGif}
-//       />
-//     ) : (
-//       <GifDetailed
-//         openedGif={openedGif}
-//         // handleBackButton={handleBackButton}
-//         // onClickOnLike={(gif) => addGif(gif)}
-//       />
-//     )}
-//     {favouriteListOpened ? (
-//       ""
-//     ) : (
-//       <FavouriteGifs
-//         onClickOnGif={handleClickOnGif}
-//         listOfVaouriteGifs={favouriteGif}
-//       />
-//     )}
-//   </>
-// );
-// }
 
 export default App;
