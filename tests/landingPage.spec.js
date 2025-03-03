@@ -14,7 +14,6 @@ test("has dislike button", async ({ page }) => {
   await page.locator(".gifContainer").nth(0).click();
 
   // Expects gif detailed view.
-  // await expect(page.locator(".gifContainerStandalone")).toHaveText;
 
   // Expects page to have a heading with the name of Installation.
   const buttonLike = page.locator("button.button-like");
