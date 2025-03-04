@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/static/css/main.c3ded444.css",
-    "main.js": "/static/js/main.4a29384d.js",
-    "index.html": "/index.html",
-    "main.c3ded444.css.map": "/static/css/main.c3ded444.css.map",
-    "main.4a29384d.js.map": "/static/js/main.4a29384d.js.map"
+    "main.css": "/valderdestefan.github.io/giphy/static/css/main.c3ded444.css",
+    "main.js": "/valderdestefan.github.io/giphy/static/js/main.4a29384d.js",
+    "index.html": "/valderdestefan.github.io/giphy/index.html",
+    "main.c3ded444.css.map": "/valderdestefan.github.io/giphy/static/css/main.c3ded444.css.map",
+    "main.4a29384d.js.map": "/valderdestefan.github.io/giphy/static/js/main.4a29384d.js.map"
   },
   "entrypoints": [
     "static/css/main.c3ded444.css",
